@@ -20,10 +20,8 @@
   <div class="provinces-grid" id="province-grid">
     @foreach($provinces as $province)
       <a href="{{ route('destination.show', $province->id) }}" class="province-card">
-        <div class="province-img-wrap" data-pswp-gallery>
-          <a data-pswp-src="{{ $province->image }}" aria-label="View {{ $province->name }} full image" onclick="event.preventDefault(); event.stopPropagation();">
-            <img src="{{ $province->image }}" alt="{{ $province->name }}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1539650116574-75c0c6d73f6e?w=600&q=60'">
-          </a>
+        <div class="province-img-wrap">
+          <img src="{{ $province->image }}" alt="{{ $province->name }}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1539650116574-75c0c6d73f6e?w=600&q=60'">
           <div class="province-overlay">
             <span class="province-label">Province</span>
             <h2 class="province-name">{{ strtoupper($province->name) }}</h2>
