@@ -45,24 +45,41 @@
       <h2 class="place-section-title">About This Place</h2>
       <div class="about-grid">
         <p class="about-text">{{ $place->about }}</p>
-        @if($place->about_image || $place->about_image_2 || $place->about_image_3)
-          <div class="about-gallery">
-            @if($place->about_image)
-              <div class="about-img">
-                <img src="{{ $place->about_image }}" alt="{{ $place->name }} scenery 1" onerror="this.style.display='none'" />
+        @php
+          $sceneryImages = array_filter([
+            $place->about_image   ? ['src' => $place->about_image,   'alt' => $place->name . ' scenery 1'] : null,
+            $place->about_image_2 ? ['src' => $place->about_image_2, 'alt' => $place->name . ' scenery 2'] : null,
+            $place->about_image_3 ? ['src' => $place->about_image_3, 'alt' => $place->name . ' scenery 3'] : null,
+          ]);
+        @endphp
+        @if(count($sceneryImages) > 0)
+          {{-- Single image: show classic about-img, multiple: use Swiper --}}
+          @if(count($sceneryImages) === 1)
+            <div class="about-gallery" data-pswp-gallery>
+              @foreach($sceneryImages as $si)
+                <div class="about-img">
+                  <a data-pswp-src="{{ $si['src'] }}" aria-label="View full image of {{ $si['alt'] }}">
+                    <img src="{{ $si['src'] }}" alt="{{ $si['alt'] }}" onerror="this.closest('.about-img').style.display='none'" />
+                  </a>
+                </div>
+              @endforeach
+            </div>
+          @else
+            <div class="swiper about-scenery-swiper" data-pswp-gallery>
+              <div class="swiper-wrapper">
+                @foreach($sceneryImages as $si)
+                  <div class="swiper-slide about-img" style="height: 220px; border-radius: var(--radius-md); overflow: hidden;">
+                    <a data-pswp-src="{{ $si['src'] }}" aria-label="View full image of {{ $si['alt'] }}">
+                      <img src="{{ $si['src'] }}" alt="{{ $si['alt'] }}" onerror="this.closest('.swiper-slide').style.display='none'" style="width:100%;height:100%;object-fit:cover;" />
+                    </a>
+                  </div>
+                @endforeach
               </div>
-            @endif
-            @if($place->about_image_2)
-              <div class="about-img">
-                <img src="{{ $place->about_image_2 }}" alt="{{ $place->name }} scenery 2" onerror="this.style.display='none'" />
-              </div>
-            @endif
-            @if($place->about_image_3)
-              <div class="about-img">
-                <img src="{{ $place->about_image_3 }}" alt="{{ $place->name }} scenery 3" onerror="this.style.display='none'" />
-              </div>
-            @endif
-          </div>
+              <div class="swiper-pagination"></div>
+              <div class="swiper-button-prev"></div>
+              <div class="swiper-button-next"></div>
+            </div>
+          @endif
         @endif
       </div>
     @endif
@@ -89,11 +106,13 @@
     <!-- Local Foods -->
     @if($place->foods->count() > 0)
       <h2 class="place-section-title">Local Foods to Try</h2>
-      <div class="place-cards-grid">
+      <div class="place-cards-grid" data-pswp-gallery>
         @foreach($place->foods as $food)
           <div class="place-sub-card">
             @if($food->image)
-              <img src="{{ $food->image }}" alt="{{ $food->name }}" loading="lazy" onerror="this.style.display='none'" />
+              <a data-pswp-src="{{ $food->image }}" aria-label="View {{ $food->name }} full image">
+                <img src="{{ $food->image }}" alt="{{ $food->name }}" loading="lazy" onerror="this.closest('a').style.display='none'" />
+              </a>
             @endif
             <div class="place-sub-card-body">
               <h3 class="place-sub-name">{{ $food->name }}</h3>
@@ -112,11 +131,13 @@
     <!-- Hotels -->
     @if($place->hotels->count() > 0)
       <h2 class="place-section-title">Where to Stay</h2>
-      <div class="place-cards-grid">
+      <div class="place-cards-grid" data-pswp-gallery>
         @foreach($place->hotels as $hotel)
           <div class="place-sub-card" @if($hotel->map_link) onclick="window.open('{{ $hotel->map_link }}', '_blank')" style="cursor: pointer;" @endif>
             @if($hotel->image)
-              <img src="{{ $hotel->image }}" alt="{{ $hotel->name }}" loading="lazy" onerror="this.style.display='none'" />
+              <a data-pswp-src="{{ $hotel->image }}" aria-label="View {{ $hotel->name }} full image" @if($hotel->map_link) data-bypass @endif onclick="event.stopPropagation();">
+                <img src="{{ $hotel->image }}" alt="{{ $hotel->name }}" loading="lazy" onerror="this.closest('a').style.display='none'" />
+              </a>
             @endif
             <div class="place-sub-card-body">
               <h3 class="place-sub-name">{{ $hotel->name }}</h3>

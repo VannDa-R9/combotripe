@@ -12,6 +12,7 @@
       <form action="{{ route('search') }}" method="GET" class="search-input-wrap">
         <span class="search-icon">🔍</span>
         <input
+          id="main-search-input"
           type="text"
           name="q"
           class="search-input"

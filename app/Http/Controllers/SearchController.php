@@ -63,4 +63,113 @@ class SearchController extends Controller
 
         return view('search', compact('places', 'query', 'category'));
     }
+
+    /**
+     * Endpoint for AJAX Live Search dropdown
+     */
+    public function liveSearch(Request $request)
+    {
+        $query = trim(substr((string) $request->input('q', ''), 0, 100));
+
+        if (mb_strlen($query) < 2) {
+            return response()->json([
+                'provinces' => [],
+                'places' => [],
+                'foods' => [],
+                'hotels' => [],
+                'tags' => [],
+            ]);
+        }
+
+        // 1. Places
+        $places = Place::with('province')
+            ->where('name', 'like', "%{$query}%")
+            ->orWhere('tagline', 'like', "%{$query}%")
+            ->limit(4)
+            ->get()
+            ->map(function ($place) {
+                return [
+                    'id' => $place->id,
+                    'name' => $place->name,
+                    'meta' => $place->province ? $place->province->name : ($place->tagline ?? 'Destination'),
+                    'image' => $place->image,
+                    'url' => route('place.show', $place->id),
+                    'category' => 'Place',
+                ];
+            });
+
+        // 2. Provinces
+        $provinces = \App\Models\Province::where('name', 'like', "%{$query}%")
+            ->orWhere('tagline', 'like', "%{$query}%")
+            ->limit(4)
+            ->get()
+            ->map(function ($prov) {
+                return [
+                    'id' => $prov->id,
+                    'name' => $prov->name,
+                    'meta' => $prov->tagline ?? 'Province in Cambodia',
+                    'image' => $prov->image,
+                    'url' => route('destination.show', $prov->id),
+                    'category' => 'Province',
+                ];
+            });
+
+        // 3. Foods
+        $foods = \App\Models\Food::with('place')
+            ->where('name', 'like', "%{$query}%")
+            ->orWhere('description', 'like', "%{$query}%")
+            ->limit(4)
+            ->get()
+            ->map(function ($food) {
+                return [
+                    'id' => $food->id,
+                    'name' => $food->name,
+                    'meta' => $food->place ? $food->place->name : 'Local Food',
+                    'image' => $food->image,
+                    'url' => $food->place ? route('place.show', $food->place_id) : route('explore'),
+                    'category' => 'Food',
+                ];
+            });
+
+        // 4. Hotels
+        $hotels = \App\Models\Hotel::with('place')
+            ->where('name', 'like', "%{$query}%")
+            ->orWhere('description', 'like', "%{$query}%")
+            ->limit(4)
+            ->get()
+            ->map(function ($hotel) {
+                return [
+                    'id' => $hotel->id,
+                    'name' => $hotel->name,
+                    'meta' => $hotel->price ? '$' . $hotel->price : 'Hotel',
+                    'image' => $hotel->image,
+                    'url' => $hotel->place ? route('place.show', $hotel->place_id) : route('explore'),
+                    'category' => 'Hotel',
+                ];
+            });
+
+        // 5. Tags
+        $tags = \App\Models\Tag::where('name', 'like', "%{$query}%")
+            ->limit(4)
+            ->get()
+            ->map(function ($tag) {
+                return [
+                    'id' => $tag->id,
+                    'name' => '#' . $tag->name,
+                    'meta' => 'Category Tag',
+                    'image' => null,
+                    'url' => route('explore', ['tags' => $tag->name]),
+                    'category' => 'Tag',
+                ];
+            });
+
+        return response()->json([
+            'provinces' => $provinces,
+            'places' => $places,
+            'foods' => $foods,
+            'hotels' => $hotels,
+            'tags' => $tags,
+        ]);
+    }
 }
+

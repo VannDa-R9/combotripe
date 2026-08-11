@@ -2,6 +2,15 @@
 // CAMBOTRIPS — SPA Navigation Engine  (v3 — reload-loop fixes)
 // ============================================================
 //
+import { initGallery } from './gallery.js';
+import { initLiveSearch } from './live-search.js';
+
+// Re-run per-page component initialisation after every SPA swap.
+function initPageComponents() {
+  initGallery();
+  initLiveSearch();
+}
+//
 // Root causes fixed in v2
 // ----------------------------------
 // BUG 1: initApp() added document click/submit/scroll listeners every time
@@ -230,6 +239,9 @@ function navigateTo(url, addToHistory = true) {
 
       // Run page-specific inline scripts from the NEW content only
       runInlineScripts(newContent);
+
+      // Re-init page-level components (gallery, live search) for new content
+      initPageComponents();
     })
     .catch(err => {
       console.error('[SPA] Navigation failed:', err);
@@ -366,7 +378,8 @@ function initApp() {
 
 // ── Bootstrap ─────────────────────────────────────────────────
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initApp);
+  document.addEventListener('DOMContentLoaded', () => { initApp(); initPageComponents(); });
 } else {
   initApp();
+  initPageComponents();
 }

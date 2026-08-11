@@ -15,6 +15,8 @@ Route::get('/destination/{id}', [ProvinceController::class, 'show'])->name('dest
 Route::get('/place/{id}', [PlaceController::class, 'show'])->name('place.show');
 Route::get('/explore', [ExploreController::class, 'index'])->name('explore');
 Route::get('/search', [SearchController::class, 'index'])->name('search');
+Route::get('/api/live-search', [SearchController::class, 'liveSearch'])->name('api.liveSearch');
+
 
 // Authentication
 Route::middleware('guest')->group(function () {
