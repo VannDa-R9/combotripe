@@ -979,7 +979,10 @@ button { cursor: pointer; font-family: var(--font-main); border: none; outline: 
   overflow: hidden;
 }
 .place-hero img {
+  width: 100%;
   height: 100%;
+  object-fit: cover;
+  object-position: center top;
   animation: kenburns 20s ease-in-out infinite alternate;
 }
 .place-hero-overlay {
@@ -1099,10 +1102,17 @@ button { cursor: pointer; font-family: var(--font-main); border: none; outline: 
 }
 
 .about-img {
-  height: 220px;
+  height: 240px;
   border-radius: var(--radius-md);
   overflow: hidden;
   box-shadow: var(--shadow-md);
+}
+.about-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
 }
 
 .things-todo ul {
@@ -1797,7 +1807,6 @@ button { cursor: pointer; font-family: var(--font-main); border: none; outline: 
   .provinces-grid { grid-template-columns: repeat(2, 1fr); }
   .quick-info-bar { grid-template-columns: repeat(2, 1fr); }
   .about-grid { grid-template-columns: 1fr; }
-  .about-img { display: none; }
 }
 
 @media (max-width: 768px) {
