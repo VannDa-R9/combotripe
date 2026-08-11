@@ -3,7 +3,6 @@ providers = ["...", "php", "node"]
 
 [variables]
     NIXPACKS_PHP_ROOT_DIR = "/app/public"
-    PORT = "8080"
 
 [phases.build]
     cmds = [
@@ -11,13 +10,3 @@ providers = ["...", "php", "node"]
         "npm ci",
         "npm run build"
     ]
-
-[phases.postbuild]
-    cmds = [
-        "php artisan config:cache",
-        "php artisan route:cache",
-        "php artisan view:cache",
-        "php artisan migrate --force",
-        "php artisan db:seed --force"
-    ]
-    dependsOn = ["build"]
