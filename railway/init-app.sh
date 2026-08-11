@@ -1,11 +1,8 @@
 #!/bin/bash
 set -e
 
-# Run migrations
+# Run migrations (preserves existing data, only applies new schema changes)
 php artisan migrate --force
-
-# Run seeders (safe with firstOrCreate)
-php artisan db:seed --force
 
 # Clear and rebuild cache
 php artisan optimize:clear
