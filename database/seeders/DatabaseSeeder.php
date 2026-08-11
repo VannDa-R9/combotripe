@@ -17,18 +17,23 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-            'password' => bcrypt('password'),
-        ]);
+        User::firstOrCreate(
+            ['email' => 'test@example.com'],
+            [
+                'name' => 'Test User',
+                'password' => bcrypt('password'),
+            ]
+        );
 
-        User::factory()->create([
-            'name' => 'Administrator',
-            'email' => 'admin@cambotrips.com',
-            'password' => bcrypt('password'),
-            'is_admin' => true,
-        ]);
+        User::firstOrCreate(
+            ['email' => 'admin@cambotrips.com'],
+            [
+                'name' => 'Administrator',
+                'password' => bcrypt('password'),
+                'is_admin' => true,
+            ]
+        );
+
 
         $this->call(TravelDataSeeder::class);
     }
